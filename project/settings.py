@@ -19,13 +19,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '+zdb0w@c4y*)1ef5)^rti%kp3b*6z!dm-%s_u_27c$yco9sdrr'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,12 +41,14 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.contrib.sites.middleware.CurrentSiteMiddleware',
     'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
@@ -135,8 +135,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = '2460socceronly0512@gmail.com'
-EMAIL_HOST_PASSWORD = 'enumwygivuvybffh'
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.open_id.OpenIdAuth',
@@ -147,3 +145,15 @@ AUTHENTICATION_BACKENDS = (
 
     'django.contrib.auth.backends.ModelBackend',
 )
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
+
+if not DEBUG:
+    SECRET_KEY = os.environ['SECRET_KEY']
+    EMAIL_HOST_USER = os.environ['EMAIL_HOST_USER']
+    EMAIL_HOST_PASSWORD = os.environ['EMAIL_HOST_PASSWORD']
+    SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = os.environ['SOCIAL_AUTH_GOOGLE_OAUTH2_KEY']
+    SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = os.environ['SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET']
